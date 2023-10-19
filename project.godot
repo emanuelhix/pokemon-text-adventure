@@ -28,12 +28,24 @@ _global_script_classes=[ {
 "class": "NPC",
 "language": "GDScript",
 "path": "res://npcs/NPC.gd"
+}, {
+"base": "Node",
+"class": "State",
+"language": "GDScript",
+"path": "res://finite_state_machine/state.gd"
+}, {
+"base": "Node2D",
+"class": "StateMachine",
+"language": "GDScript",
+"path": "res://finite_state_machine/finite_state_machine.gd"
 } ]
 _global_script_class_icons={
 "Exit": "",
 "GameRoom": "",
 "Item": "",
-"NPC": ""
+"NPC": "",
+"State": "",
+"StateMachine": ""
 }
 
 [application]
