@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://input/Input.gd" type="Script" id=1]
 [ext_resource path="res://fonts/plex_mono_28.tres" type="DynamicFont" id=2]
@@ -9,6 +9,10 @@
 [ext_resource path="res://Player.gd" type="Script" id=7]
 [ext_resource path="res://GameInfo.tscn" type="PackedScene" id=8]
 [ext_resource path="res://SidePanel.tscn" type="PackedScene" id=9]
+[ext_resource path="res://finite_state_machine/finite_state_machine.tscn" type="PackedScene" id=10]
+[ext_resource path="res://finite_state_machine/state.tscn" type="PackedScene" id=11]
+[ext_resource path="res://pokemon/emboar.gd" type="Script" id=12]
+[ext_resource path="res://pokemon/samurott.gd" type="Script" id=13]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.0784314, 0.0784314, 0.0784314, 1 )
@@ -24,9 +28,15 @@ bg_color = Color( 0.286275, 0.286275, 0.286275, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+
+[node name="TurnManager" parent="." instance=ExtResource( 10 )]
+initial_state = NodePath("Emboar")
+
+[node name="Emboar" parent="TurnManager" instance=ExtResource( 11 )]
+script = ExtResource( 12 )
+
+[node name="Samurott" parent="TurnManager" instance=ExtResource( 11 )]
+script = ExtResource( 13 )
 
 [node name="Player" type="Node" parent="."]
 script = ExtResource( 7 )
@@ -118,9 +128,6 @@ room_description = "the forest outside of the town. Congratulations! You've made
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_styles/panel = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="MarginContainer" type="MarginContainer" parent="Background"]
 margin_right = 1024.0
@@ -178,5 +185,35 @@ script = ExtResource( 1 )
 [node name="SidePanel" parent="Background/MarginContainer/Columns" instance=ExtResource( 9 )]
 margin_left = 664.0
 
+[node name="InfoLabel" parent="Background/MarginContainer/Columns/SidePanel/MarginContainer/Rows/TitleSection" index="0"]
+text = "Trainer Parker"
+
+[node name="RoomNameLabel" parent="Background/MarginContainer/Columns/SidePanel/MarginContainer/Rows/TitleSection" index="1"]
+text = "GDA GYM BATTLE"
+
+[node name="RoomDescriptionLabel" parent="Background/MarginContainer/Columns/SidePanel/MarginContainer/Rows" index="1"]
+margin_bottom = 96.0
+text = "Battle Information:"
+
+[node name="ListArea" parent="Background/MarginContainer/Columns/SidePanel/MarginContainer/Rows" index="2"]
+margin_top = 116.0
+margin_bottom = 550.0
+
+[node name="ExitLabel" parent="Background/MarginContainer/Columns/SidePanel/MarginContainer/Rows/ListArea" index="0"]
+bbcode_text = "Emboar's HP: 100"
+text = "Emboar's HP: 100"
+
+[node name="NpcLabel" parent="Background/MarginContainer/Columns/SidePanel/MarginContainer/Rows/ListArea" index="1"]
+bbcode_text = "Samurott's HP: 100"
+text = "Samurott's HP: 100"
+
+[node name="ItemLabel" parent="Background/MarginContainer/Columns/SidePanel/MarginContainer/Rows/ListArea" index="2"]
+visible = false
+
+[node name="HelpLabel" parent="Background/MarginContainer/Columns/SidePanel/MarginContainer/Rows" index="3"]
+visible = false
+
 [connection signal="text_entered" from="Background/MarginContainer/Columns/Rows/InputArea/HBoxContainer/Input" to="." method="_on_Input_text_entered"]
 [connection signal="text_entered" from="Background/MarginContainer/Columns/Rows/InputArea/HBoxContainer/Input" to="Background/MarginContainer/Columns/Rows/InputArea/HBoxContainer/Input" method="_on_Input_text_entered"]
+
+[editable path="Background/MarginContainer/Columns/SidePanel"]

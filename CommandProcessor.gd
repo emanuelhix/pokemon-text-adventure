@@ -6,17 +6,20 @@ signal room_updated(current_room)
 
 var current_room = null
 var player = null
+onready var turn_manager = get_parent().find_node("TurnManager")
+var pokemon = []
 
-
-func initialize(starting_room, player) -> String:
+func initialize(player, pokemon):
 	self.player = player
-	return change_room(starting_room)
+	self.pokemon = pokemon
 
+func process_command(input: String) -> Dictionary:
+	if turn_manager.state != pokemon[0]:
+		return {msg = ""}
 
-func process_command(input: String) -> String:
 	var words = input.split(" ", false)
 	if words.size() == 0:
-		return "Error: no words were parsed."
+		return {msg = "Error: no words were parsed."}
 
 	var first_word = words[0].to_lower()
 	var second_word = ""
@@ -24,24 +27,14 @@ func process_command(input: String) -> String:
 		second_word = words[1].to_lower()
 
 	match first_word:
-		"go":
-			return go(second_word)
-		"take":
-			return take(second_word)
-		"drop":
-			return drop(second_word)
-		"inventory":
-			return inventory()
+		"moves":
+			return moves()
 		"use":
 			return use(second_word)
-		"talk":
-			return talk(second_word)
-		"give":
-			return give(second_word)
-		"help":
-			return help()
+		"run":
+			return run()
 		_:
-			return Types.wrap_system_text("Unrecognized command - please try again.")
+			return {msg = Types.wrap_system_text("Unrecognized command - please try again.")}
 
 
 func go(second_word: String) -> String:
@@ -57,7 +50,6 @@ func go(second_word: String) -> String:
 		return PoolStringArray(["You go " + Types.wrap_location_text(second_word) + ".", change_response]).join("\n")
 	else:
 		return "This room has no " + Types.wrap_location_text(second_word) + " exit."
-
 
 func take(second_word: String) -> String:
 	if second_word == "":
@@ -90,25 +82,17 @@ func drop(second_word: String) -> String:
 func inventory() -> String:
 	return player.get_inventory_list()
 
+func run() -> Dictionary:
+	return {msg= "You failed to run away!"}
 
-func use(second_word: String) -> String:
+func use(second_word: String) -> Dictionary:
 	if second_word == "":
-		return Types.wrap_system_text("Drop what?")
+		return {msg = Types.wrap_system_text("Use what?"), end_turn = false}
+	
+	if turn_manager.state.can_use(second_word):
+		return {msg= pokemon[0].use_move_or_item(second_word, pokemon[1]), end_turn= true}
 
-	for item in player.inventory:
-		if second_word.to_lower() == item.item_name.to_lower():
-			match item.item_type:
-				Types.ItemTypes.KEY:
-					for exit in current_room.exits.values():
-						if exit == item.use_value:
-							exit.is_locked = false
-							player.drop_item(item)
-							return "You use a " + Types.wrap_item_text(second_word) + " to unlock the way " + Types.wrap_location_text(exit.get_other_room(current_room).room_name) + "."
-					return "Your " + Types.wrap_item_text(second_word) + " does not unlock anything here."
-				_:
-					return "Error - tried to use an item with an invalid type."
-
-	return "You don't have a " + Types.wrap_item_text(second_word) + "."
+	return {msg = "You don't have " + Types.wrap_item_text(second_word) + ".", end_turn = false}
 
 
 func talk(second_word: String) -> String:
@@ -165,6 +149,9 @@ func help() -> String:
 		" help"
 	]).join("\n")
 
+func moves() -> Dictionary:
+	var moves = pokemon[0].moves.keys()
+	return {msg = PoolStringArray(moves).join("\n")}
 
 func change_room(new_room: GameRoom) -> String:
 	current_room = new_room

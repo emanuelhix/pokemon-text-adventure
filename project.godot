@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Pokemon",
+"class": "Emboar",
+"language": "GDScript",
+"path": "res://pokemon/emboar.gd"
+}, {
 "base": "Resource",
 "class": "Exit",
 "language": "GDScript",
@@ -29,6 +34,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://npcs/NPC.gd"
 }, {
+"base": "State",
+"class": "Pokemon",
+"language": "GDScript",
+"path": "res://pokemon/pokemon.gd"
+}, {
+"base": "Pokemon",
+"class": "Samurott",
+"language": "GDScript",
+"path": "res://pokemon/samurott.gd"
+}, {
 "base": "Node",
 "class": "State",
 "language": "GDScript",
@@ -40,10 +55,13 @@ _global_script_classes=[ {
 "path": "res://finite_state_machine/finite_state_machine.gd"
 } ]
 _global_script_class_icons={
+"Emboar": "",
 "Exit": "",
 "GameRoom": "",
 "Item": "",
 "NPC": "",
+"Pokemon": "",
+"Samurott": "",
 "State": "",
 "StateMachine": ""
 }
